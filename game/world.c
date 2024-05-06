@@ -1,9 +1,13 @@
 #include "world.h"
+#include "Body.h"
 #include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
-Body* head = NULL;
-Body* bodies = NULL;
+ncBody* head = NULL;
+ncBody* bodies = NULL;
 int bodyCount = 0;
+Vector2 ncGravity;
 
 /*
 Assert if provided Body is not NULL
@@ -13,10 +17,9 @@ If body is the head, update head to 'body->next'
 Decrement body count
 Free the body
 */
-Body* CreateBody()
+ncBody* CreateBody()
 {
-    
-    Body* newBody = (Body*)malloc(sizeof(Body));
+    ncBody* newBody = (ncBody*)malloc(sizeof(ncBody));
     asset(newBody);
 
     newBody->prev = NULL;
@@ -42,7 +45,7 @@ Decrement body count
 Free the body
 */
 
-void DestroyBody(Body* body)
+void DestroyBody(ncBody* body)
 {
     if (body != NULL)
     {
@@ -64,6 +67,6 @@ void DestroyBody(Body* body)
         head = body->next;
     }
 
-    body--;
+    bodyCount--;
     free(body);
 }
