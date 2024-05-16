@@ -266,20 +266,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Body.c" />
-    <ClCompile Include="src\main.c" />
-    <ClCompile Include="world.c" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\raylib-master\raylib.vcxproj">
       <Project>{8898EA18-743A-15EF-5DF5-284349369C3F}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Body.h" />
-    <ClInclude Include="integrator.h" />
-    <ClInclude Include="mathf.h" />
-    <ClInclude Include="world.h" />
+    <ClInclude Include="src\Body.h" />
+    <ClInclude Include="src\collision.h" />
+    <ClInclude Include="src\contact.h" />
+    <ClInclude Include="src\editor.h" />
+    <ClInclude Include="src\force.h" />
+    <ClInclude Include="src\integrator.h" />
+    <ClInclude Include="src\mathf.h" />
+    <ClInclude Include="src\render.h" />
+    <ClInclude Include="src\Spring.h" />
+    <ClInclude Include="src\world.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Body.c" />
+    <ClCompile Include="src\collision.c" />
+    <ClCompile Include="src\contact.c" />
+    <ClCompile Include="src\editor.c" />
+    <ClCompile Include="src\force.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\render.c" />
+    <ClCompile Include="src\Spring.c" />
+    <ClCompile Include="src\world.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
