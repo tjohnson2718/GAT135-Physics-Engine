@@ -54,10 +54,25 @@ int main(void)
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 		{
 			ncBody* body = CreateBody(ConvertScreenToWorld(position), ncEditorData.MassMinValue, ncEditorData.BodyTypeActive);
-			body->damping = ncEditorData.DampingValue;
-			body->gravityScale = ncEditorData.GravityScaleValue;
+			/*body->damping = ncEditorData.DampingValue;
+			body->gravityScale = ncEditorData.GravityScaleValue;*/
+
+			body->damping = 0.5f;
+			body->gravityScale = 15;
 			body->color = WHITE; // ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
-			body->restitution = 0.3f;
+			body->restitution = 0.8f;
+
+			AddBody(body);
+		}
+
+		// create static body
+		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_CONTROL))
+		{
+			ncBody* body = CreateBody(ConvertScreenToWorld(position), 3, BT_STATIC);
+			body->damping = 0;
+			body->gravityScale = 0;
+			body->color = ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
+			body->restitution = 0;
 
 			AddBody(body);
 		}
