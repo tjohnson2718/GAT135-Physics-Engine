@@ -63,7 +63,13 @@ ncContact_t* GenerateContact(ncBody* body1, ncBody* body2)
 
 void SeparateContacts(ncContact_t* contacts)
 {
-
+	for (ncContact_t* contact = contacts; contact; contact = contact->next)
+	{
+		float totalInverseMass = contact->body1->inversMass + contact->body2->inversMass;
+		Vector2 seperation = Vector2Scale(contact->normal, contact->depth / totalInverseMass);
+		contact->body1->position = Vector2Add(contact->body1->position, Vector2Scale(seperation, contact->body1->inversMass));
+		contact->body2->position = Vector2Add(contact->body2->position, Vector2Scale(seperation, -contact->body2->inversMass));	
+	}
 }
 
 void ResolveContacts(ncContact_t* contacts)
