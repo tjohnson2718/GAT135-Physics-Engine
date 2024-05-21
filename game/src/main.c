@@ -22,17 +22,19 @@ int main(void)
 {
 	ncBody* selectedBody = NULL;
 	ncBody* connectBody = NULL;
+	float fixedTimeStep = 1.0f / 60.0f;
+	float timeAccumulator = 0.0f;
 
 	InitWindow(1280, 720, "Physics Engine");
 	InitEditor();
 	SetTargetFPS(120);
 
 	// initialize world
-	ncGravity = (Vector2){ 0, ncEditorData.GravitySliderValue };
 
 	// game loop
 	while (!WindowShouldClose())
 	{
+		ncGravity = (Vector2){ 0, ncEditorData.GravitySliderValue };
 
 		// update
 		float dt = GetFrameTime();
@@ -87,33 +89,48 @@ int main(void)
 				AddSpring(spring);
 			}
 		}
-	
-		// fireworks
-		//if (IsMouseButtonDown(1))
-		//{
-		//	for (int i = 0; i < 10; i++)
-		//	{
-		//		ncBody* body = CreateBody();
-		//		body->position = position;
-		//		body->mass = GetRandomFloatValue(1, 3);
-		//		body->inversMass = 1 / body->mass;
-		//		body->type = BT_DYNAMIC;
-		//		body->damping = GetRandomFloatValue(0, 5);
-		//		body->gravityScale = 1;
-		//		ApplyForce(body, (Vector2) { GetRandomFloatValue(-180, 180), GetRandomFloatValue(50, 100) }, FM_VELOCITY);
-		//		ApplyGravitation(bodies, 100);
-		//	}
-		//}
 
-		// apply gravitation
-		ApplyGravitation(bodies, ncEditorData.GravitationSliderValue);
-		ApplySpringForce(ncSprings);
+		// Add delta time to time accumulator
+		timeAccumulator += dt;
 
-		// update bodies
-		for (ncBody* body = bodies; body; body = body->next)
+		// Physics simulation
+		while (timeAccumulator >= fixedTimeStep)
 		{
-			Step(body, dt);
+			// Apply gravitation and other forces
+			ApplyGravitation(bodies, ncEditorData.GravitationSliderValue);
+			ApplySpringForce(ncSprings);
+
+			// Update bodies
+			for (ncBody* body = bodies; body; body = body->next)
+			{
+				Step(body, fixedTimeStep);
+			}
+
+			// Destroy all contacts
+			ncContact_t* contacts = NULL;
+
+			// Create contacts
+			CreateContacts(bodies, &contacts);
+
+			// Separate contacts
+			SeparateContacts(contacts);
+
+			// Resolve contacts
+			ResolveContacts(contacts);
+
+			// Subtract fixed time step from time accumulator
+			timeAccumulator -= fixedTimeStep;
 		}
+
+		//// apply gravitation
+		//ApplyGravitation(bodies, ncEditorData.GravitationSliderValue);
+		//ApplySpringForce(ncSprings);
+
+		//// update bodies
+		//for (ncBody* body = bodies; body; body = body->next)
+		//{
+		//	Step(body, dt);
+		//}
 
 		// collision
 		ncContact_t* contacts = NULL;
