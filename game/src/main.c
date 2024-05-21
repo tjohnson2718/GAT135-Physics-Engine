@@ -28,11 +28,12 @@ int main(void)
 	SetTargetFPS(120);
 
 	// initialize world
-	ncGravity = (Vector2){ 0, -1 };
+	ncGravity = (Vector2){ 0, ncEditorData.GravitySliderValue };
 
 	// game loop
 	while (!WindowShouldClose())
 	{
+
 		// update
 		float dt = GetFrameTime();
 		float fps = (float)GetFPS();
@@ -53,13 +54,11 @@ int main(void)
 		// create body
 		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 		{
-			ncBody* body = CreateBody(ConvertScreenToWorld(position), ncEditorData.MassMinValue, ncEditorData.BodyTypeActive);
-			/*body->damping = ncEditorData.DampingValue;
-			body->gravityScale = ncEditorData.GravityScaleValue;*/
+			ncBody* body = CreateBody(ConvertScreenToWorld(position), ncEditorData.MassSliderValue, ncEditorData.BodyTypeDropDownActive);
+			body->damping = ncEditorData.DampingSliderValue;
+			body->gravityScale = ncEditorData.GS_SliderValue;
 
-			body->damping = 0.5f;
-			body->gravityScale = 15;
-			body->color = WHITE; // ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
+			body->color = ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
 			body->restitution = 0.8f;
 
 			AddBody(body);
@@ -107,7 +106,7 @@ int main(void)
 		//}
 
 		// apply gravitation
-		ApplyGravitation(bodies, ncEditorData.GravitationValue);
+		ApplyGravitation(bodies, ncEditorData.GravitationSliderValue);
 		ApplySpringForce(ncSprings);
 
 		// update bodies

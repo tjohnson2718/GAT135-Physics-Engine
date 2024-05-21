@@ -3,16 +3,19 @@
 
 typedef struct ncEditorData
 {
-	Vector2 anchor01;
+    Vector2 anchor01;
+    Vector2 anchor02;
+    Vector2 anchor03;
 
-	bool EditorBoxActive;
-	float MassMinValue;
-	float MassMaxValue;
-	float GravitationValue;
-	bool BodyTypeEditMode;
-	int BodyTypeActive;
-	float DampingValue;
-	float GravityScaleValue;
+    bool EditorWindowActive;
+    bool BodyTypeDropDownEditMode;
+    int BodyTypeDropDownActive;
+    float MassSliderValue;
+    float DampingSliderValue;
+    float GS_SliderValue;
+    float StiffnessSliderValue;
+    float GravitySliderValue;
+    float GravitationSliderValue;
 } ncEditorData_t;
 
 extern ncEditorData_t ncEditorData;

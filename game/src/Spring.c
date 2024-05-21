@@ -13,6 +13,11 @@ ncSpring_t* CreateSpring(struct ncBody* body1, struct ncBody* body2, float restL
     assert(spring);
 
     memset(spring, 0, sizeof(ncSpring_t));
+    spring->body1 = body1;
+    spring->body2 = body2;
+
+    spring->restLength = restLength;
+    spring->k = k;
 
     return spring;
 }
