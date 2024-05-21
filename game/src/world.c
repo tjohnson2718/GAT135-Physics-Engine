@@ -81,7 +81,17 @@ void DestroyBody(ncBody* body)
 
 
 
-void DestroyAllBodies()
+void DestroyAllBodies(ncBody* bodies)
 {
+    if (!bodies) return;
 
+    ncBody* body = bodies;
+    while (body)
+    {
+        ncBody* next = body->next;
+        free(body);
+        body = next;
+    }
+
+    bodies = NULL;
 }

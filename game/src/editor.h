@@ -14,8 +14,12 @@ typedef struct ncEditorData
     float DampingSliderValue;
     float GS_SliderValue;
     float StiffnessSliderValue;
-    float GravitySliderValue;
     float GravitationSliderValue;
+    float RestitutionSliderValue;
+    float TimestepSliderValue;
+    bool Reset_BTPressed;
+    bool Simulate_BTActive;
+    float GravitySliderValue;
 } ncEditorData_t;
 
 extern ncEditorData_t ncEditorData;

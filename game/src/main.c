@@ -22,7 +22,7 @@ int main(void)
 {
 	ncBody* selectedBody = NULL;
 	ncBody* connectBody = NULL;
-	float fixedTimeStep = 1.0f / 60.0f;
+	float fixedTimeStep = 0.0f;
 	float timeAccumulator = 0.0f;
 
 	InitWindow(1280, 720, "Physics Engine");
@@ -35,6 +35,7 @@ int main(void)
 	while (!WindowShouldClose())
 	{
 		ncGravity = (Vector2){ 0, ncEditorData.GravitySliderValue };
+		fixedTimeStep = 1.0f / ncEditorData.TimestepSliderValue;
 
 		// update
 		float dt = GetFrameTime();
@@ -54,28 +55,33 @@ int main(void)
 		}
 
 		// create body
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
+		if (!ncEditorIntersect && IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || IsMouseButtonDown(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_SHIFT))
 		{
 			ncBody* body = CreateBody(ConvertScreenToWorld(position), ncEditorData.MassSliderValue, ncEditorData.BodyTypeDropDownActive);
 			body->damping = ncEditorData.DampingSliderValue;
 			body->gravityScale = ncEditorData.GS_SliderValue;
+			body->restitution = ncEditorData.RestitutionSliderValue;
 
 			body->color = ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
-			body->restitution = 0.8f;
 
 			AddBody(body);
 		}
 
-		// create static body
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && IsKeyDown(KEY_LEFT_CONTROL))
+		if (IsKeyDown(KEY_LEFT_ALT))
 		{
-			ncBody* body = CreateBody(ConvertScreenToWorld(position), 3, BT_STATIC);
-			body->damping = 0;
-			body->gravityScale = 0;
-			body->color = ColorFromHSV(GetRandomFloatValue(0, 360), 1, 1);
-			body->restitution = 0;
+			if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT) && selectedBody) connectBody = selectedBody;
+			if (IsMouseButtonDown(MOUSE_BUTTON_RIGHT) && connectBody) DrawLineBodyToPosition(connectBody, position);
+			if (connectBody)
+			{
+				Vector2 world = ConvertScreenToWorld(position);
+				ApplySpringForcePosition(world, connectBody, 0, 20, ncEditorData.DampingSliderValue);
+			}
+		}
 
-			AddBody(body);
+		if (ncEditorData.Reset_BTPressed)
+		{
+			bodies = NULL;
+			ncSprings = NULL;
 		}
 
 		// connect springs
@@ -85,9 +91,15 @@ int main(void)
 		{
 			if (selectedBody && selectedBody != connectBody)
 			{
-				ncSpring_t* spring = CreateSpring(connectBody, selectedBody, Vector2Distance(connectBody->position, selectedBody->position), 20);
+				ncSpring_t* spring = CreateSpring(connectBody, selectedBody, Vector2Distance(connectBody->position, selectedBody->position), ncEditorData.StiffnessSliderValue);
 				AddSpring(spring);
 			}
+		}
+
+		if (IsMouseButtonReleased(MOUSE_BUTTON_RIGHT))
+		{
+			selectedBody = NULL;
+			connectBody = NULL;
 		}
 
 		// Add delta time to time accumulator
@@ -96,6 +108,11 @@ int main(void)
 		// Physics simulation
 		while (timeAccumulator >= fixedTimeStep)
 		{
+			if (!ncEditorData.Simulate_BTActive)
+			{
+				timeAccumulator -= fixedTimeStep;
+				continue;
+			}
 			// Apply gravitation and other forces
 			ApplyGravitation(bodies, ncEditorData.GravitationSliderValue);
 			ApplySpringForce(ncSprings);
@@ -121,16 +138,6 @@ int main(void)
 			// Subtract fixed time step from time accumulator
 			timeAccumulator -= fixedTimeStep;
 		}
-
-		//// apply gravitation
-		//ApplyGravitation(bodies, ncEditorData.GravitationSliderValue);
-		//ApplySpringForce(ncSprings);
-
-		//// update bodies
-		//for (ncBody* body = bodies; body; body = body->next)
-		//{
-		//	Step(body, dt);
-		//}
 
 		// collision
 		ncContact_t* contacts = NULL;
@@ -168,7 +175,6 @@ int main(void)
 			Vector2 screen2 = ConvertWorldToScreen(spring->body2->position);
 			DrawLine((int)screen1.x, (int)screen1.y, (int)screen2.x, (int)screen2.y, YELLOW);
 		}
-		
 		EndDrawing();
 	}
 

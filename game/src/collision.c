@@ -19,6 +19,7 @@ bool Intersects(ncBody* body1, ncBody* body2)
 
 void CreateContacts(ncBody* bodies, ncContact_t** contacts)
 {
+	if (!bodies) return;
 	for (ncBody* body1 = bodies; body1; body1 = body1->next)
 	{
 		for (ncBody* body2 = body1->next; body2; body2 = body2->next)
